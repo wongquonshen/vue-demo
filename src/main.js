@@ -1,14 +1,15 @@
-import Vue from 'vue'
-import App from './App.vue'
-import iView from "iview"
-import locale from "iview/dist/locale/en-US"
+import Vue from 'vue';
+import App from './App.vue';
+import iView from 'iview';
+import locale from 'iview/dist/locale/en-US';
+import store from './store';
 
-import "iview/dist/styles/iview.css"
+import 'iview/dist/styles/iview.css';
 
-Vue.use(iView, { locale })
-Vue.config.productionTip = false
-
+Vue.use(iView, { locale });
+Vue.config.productionTip = false;
 
 new Vue({
-  render: h => h(App),
-}).$mount('#app')
+  store,
+  render: h => h(App)
+}).$mount('#app');
