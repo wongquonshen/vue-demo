@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="displayModal" width="1200">
+  <Modal v-model="displayModal" @on-cancel="cancelOnClick" width="1200">
     <Row type="flex" class="modal-main-container">
       <i-col span="24">
         <Row class="modal-title-container">
@@ -158,8 +158,9 @@ export default {
   data() {
     return {
       displayModal: false,
+      isSelected: false,
+      selected: "",
       ruleFormItem: {
-        id: 0,
         title: "",
         condition1: "",
         rule: [
@@ -249,27 +250,53 @@ export default {
     this.ruleModalBus.$on("openRuleModal", () => {
       this.displayModal = true;
     });
+
+    this.ruleModalBus.$on("viewRuleModal", () => {
+      this.displayModal = true;
+      //get selected item data
+      this.selected = this.getSelected;
+
+      this.isSelected = true;
+
+      let retrieveData = this.getGroup[this.selected];
+
+      this.ruleFormItem = retrieveData;
+    });
   },
   computed: {
-    ...mapGetters(["getGroup"])
+    ...mapGetters(["getGroup", "getSelected"])
   },
   methods: {
-    ...mapMutations(["setGroup"]),
+    ...mapMutations(["setGroup", "setSelected", "setSelectedGroup"]),
     submitOnClick() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          // let counter = this.getGroup.length;
-          // this.ruleFormItem.id = counter + 1;
-          this.setGroup(this.ruleFormItem);
-          this.$refs.ruleForm.resetFields();
-          this.ruleFormItem.rule = [
-            {
-              id: 1,
-              condition2: "",
-              condition3: "",
-              parameters: [{ id: 1, text: "" }]
-            }
-          ];
+          if (this.isSelected) {
+            //update selected item
+            this.setSelectedGroup({
+              rules: this.ruleFormItem,
+              selected: this.selected
+            });
+          } else {
+            //create new item
+            this.setGroup(this.ruleFormItem);
+          }
+          // this.$refs.ruleForm.resetFields();
+          this.isSelected = false;
+          this.ruleFormItem = {
+            id: 0,
+            title: "",
+            condition1: "",
+            rule: [
+              {
+                id: 1,
+                condition2: "",
+                condition3: "",
+                parameters: [{ id: 1, text: "" }]
+              }
+            ],
+            revenue: 0
+          };
           this.$emit("close-modal");
           this.displayModal = false;
         } else {
@@ -280,6 +307,7 @@ export default {
       });
     },
     addRule() {
+      //add rule
       const counter = this.ruleFormItem.rule.length;
 
       this.ruleFormItem.rule.push({
@@ -291,10 +319,12 @@ export default {
     },
 
     removeRule(index) {
+      //remove rule
       this.ruleFormItem.rule.splice(index, 1);
     },
 
     addParameter(index) {
+      //add parameter row
       let counter = this.ruleFormItem.rule[index].parameters.length;
       this.ruleFormItem.rule[index].parameters.push({
         id: counter + 1,
@@ -305,7 +335,34 @@ export default {
       this.ruleFormItem.rule[index].parameters.splice(indexP, 1);
     },
     cancelOnClick() {
-      this.$refs.ruleForm.resetFields();
+      if (this.isSelected) {
+        this.$emit("close-modal");
+        this.isSelected = false;
+        this.ruleFormItem = {
+          id: 0,
+          title: "",
+          condition1: "",
+          rule: [
+            {
+              id: 1,
+              condition2: "",
+              condition3: "",
+              parameters: [{ id: 1, text: "" }]
+            }
+          ],
+          revenue: 0
+        };
+      } else {
+        this.$refs.ruleForm.resetFields();
+        this.ruleFormItem.rule = [
+          {
+            id: 1,
+            condition2: "",
+            condition3: "",
+            parameters: [{ id: 1, text: "" }]
+          }
+        ];
+      }
       this.displayModal = false;
     }
   }

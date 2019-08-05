@@ -38,12 +38,12 @@ export default {
         {
           title: "Title",
           key: "title",
-          width: 580
+          width: 780
         },
         {
           title: "Condition 1",
           key: "condition1",
-          width: 200,
+          width: 300,
           render: (h, params) => {
             let row = params.row;
             return h("p", row.condition1);
@@ -69,8 +69,9 @@ export default {
         },
         {
           title: "Action",
-          width: 200,
+          width: 245,
           align: "center",
+          fixed: "right",
           render: (h, params) => {
             let row = params.row;
 
@@ -86,7 +87,11 @@ export default {
                     marginRight: "5px"
                   },
                   on: {
-                    click: () => {}
+                    click: () => {
+                      let selected = params.index;
+                      this.setSelected(selected);
+                      this.ruleModalBus.$emit("viewRuleModal");
+                    }
                   }
                 },
                 "View"
@@ -116,8 +121,9 @@ export default {
     ...mapGetters(["getGroup"])
   },
   methods: {
-    ...mapMutations(["deleteGroup"]),
+    ...mapMutations(["deleteGroup", "setSelected"]),
     createNewOnClick() {
+      //open new modal
       this.ruleModalBus.$emit("openRuleModal");
     },
     retrieveData() {

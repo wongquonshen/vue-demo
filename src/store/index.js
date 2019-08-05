@@ -8,7 +8,8 @@ Vue.use(Vuex);
 
 export function initialState() {
   return {
-    rules: []
+    rules: [],
+    selected: ''
   };
 }
 
