@@ -255,9 +255,20 @@ export default {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           this.setGroup(this.ruleFormItem);
+          this.$refs.ruleForm.resetFields();
+          this.ruleFormItem.rule = [
+            {
+              id: 1,
+              condition2: "",
+              condition3: "",
+              parameters: [{ id: 1, text: "" }]
+            }
+          ];
           this.displayModal = false;
         } else {
-          console.log("no");
+          this.$message.error(
+            "Please check to make sure all required fields are entered."
+          );
         }
       });
     },
