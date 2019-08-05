@@ -159,6 +159,7 @@ export default {
     return {
       displayModal: false,
       ruleFormItem: {
+        id: 0,
         title: "",
         condition1: "",
         rule: [
@@ -249,11 +250,16 @@ export default {
       this.displayModal = true;
     });
   },
+  computed: {
+    ...mapGetters(["getGroup"])
+  },
   methods: {
     ...mapMutations(["setGroup"]),
     submitOnClick() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          // let counter = this.getGroup.length;
+          // this.ruleFormItem.id = counter + 1;
           this.setGroup(this.ruleFormItem);
           this.$refs.ruleForm.resetFields();
           this.ruleFormItem.rule = [
@@ -264,6 +270,7 @@ export default {
               parameters: [{ id: 1, text: "" }]
             }
           ];
+          this.$emit("close-modal");
           this.displayModal = false;
         } else {
           this.$message.error(

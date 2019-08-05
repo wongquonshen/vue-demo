@@ -3,7 +3,7 @@
     <i-col class="home-main-column">
       <Row class="home-main-title">
         <Row>
-          <h1>Hi new project</h1>
+          <h1>Welcome to Revenue Group</h1>
         </Row>
         <Row class="home-create-rule-button-container">
           <Button
@@ -13,13 +13,17 @@
             @click="createNewOnClick"
           >Create Rule</Button>
         </Row>
+        <Row>
+          <Table border :columns="groupColumns" :data="rules"></Table>
+        </Row>
       </Row>
     </i-col>
-    <RuleModal :rule-modal-bus="ruleModalBus" />
+    <RuleModal :rule-modal-bus="ruleModalBus" @close-modal="hideFormModal" />
   </Row>
 </template>
 
 <script>
+import { mapMutations, mapGetters } from "vuex";
 import RuleModal from "./ModalView";
 import Vue from "vue";
 export default {
@@ -28,12 +32,99 @@ export default {
   },
   data() {
     return {
-      ruleModalBus: new Vue()
+      ruleModalBus: new Vue(),
+      rules: [],
+      groupColumns: [
+        {
+          title: "Title",
+          key: "title",
+          width: 580
+        },
+        {
+          title: "Condition 1",
+          key: "condition1",
+          width: 200,
+          render: (h, params) => {
+            let row = params.row;
+            return h("p", row.condition1);
+          }
+        },
+        {
+          title: "No. of rules",
+          key: "rule",
+          width: 200,
+          render: (h, params) => {
+            let row = params.row;
+            return h("p", row.rule.length);
+          }
+        },
+        {
+          title: "Revenue (%)",
+          key: "revenue",
+          width: 200,
+          render: (h, params) => {
+            let row = params.row;
+            return h("p", row.revenue);
+          }
+        },
+        {
+          title: "Action",
+          width: 200,
+          align: "center",
+          render: (h, params) => {
+            let row = params.row;
+
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    marginRight: "5px"
+                  },
+                  on: {
+                    click: () => {}
+                  }
+                },
+                "View"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.deleteGroup(params.index);
+                    }
+                  }
+                },
+                "Delete"
+              )
+            ]);
+          }
+        }
+      ]
     };
   },
+  computed: {
+    ...mapGetters(["getGroup"])
+  },
   methods: {
+    ...mapMutations(["deleteGroup"]),
     createNewOnClick() {
       this.ruleModalBus.$emit("openRuleModal");
+    },
+    retrieveData() {
+      this.rules = this.getGroup;
+    },
+    hideFormModal() {
+      this.retrieveData();
     }
   }
 };
