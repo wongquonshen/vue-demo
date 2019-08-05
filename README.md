@@ -1,5 +1,10 @@
 # vue-demo
 
+## Prerequisite
+```
+You need to have Node.Js installed.
+```
+
 ## Project setup
 ```
 npm install
